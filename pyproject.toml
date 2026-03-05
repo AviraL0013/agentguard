@@ -36,8 +36,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/agentguard/agentguard"
-Repository = "https://github.com/agentguard/agentguard"
+Homepage = "https://github.com/AviraL0013/agentguard"
+Repository = "https://github.com/AviraL0013/agentguard"
 
 [project.scripts]
 agentguard = "agentguard.cli:main"
