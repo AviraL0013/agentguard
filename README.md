@@ -6,6 +6,7 @@
 <p align="center">
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python 3.10+"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"></a>
+  <a href="https://pypi.org/project/agentaudit-sdk/"><img src="https://img.shields.io/pypi/v/agentaudit-sdk.svg" alt="PyPI"></a>
   <a href="#"><img src="https://img.shields.io/badge/tests-104%20passing-brightgreen.svg" alt="Tests"></a>
 </p>
 
@@ -49,7 +50,7 @@ Every call is now:
 ## Installation
 
 ```bash
-pip install -e .
+pip install agentaudit-sdk
 ```
 
 ---
@@ -244,7 +245,7 @@ python examples/basic_usage.py
 ## Run Tests
 
 ```bash
-pip install -e ".[dev]"
+pip install agentaudit-sdk[dev]
 pytest tests/ -v
 # 104 tests passing in <1 second
 ```

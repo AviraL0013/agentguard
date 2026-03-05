@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentguard"
+name = "agentaudit_sdk"
 version = "0.1.0"
 description = "Compliance, governance & observability layer for AI agents"
 readme = "README.md"
