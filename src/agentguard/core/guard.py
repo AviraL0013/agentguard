@@ -17,7 +17,7 @@ from typing import Any, Callable, Coroutine, Optional, TypeVar, Union
 
 from agentguard.core.events import LLMCallEvent, ToolCallEvent
 from agentguard.core.interceptor import Interceptor, PolicyViolationError
-from agentguard.detectors.pii import RegexPIIDetector
+from agentguard.detectors.pii import PIIDetector, RegexPIIDetector
 from agentguard.logging.audit import AuditLogger
 from agentguard.logging.reader import AuditReader
 from agentguard.policies.base import Policy, PolicyEngine
@@ -77,6 +77,7 @@ class AgentGuard:
         policies: Optional[list[Union[str, Policy]]] = None,
         audit_path: str | Path = "agentguard_audit.jsonl",
         agent_id: str = "default",
+        pii_detector: PIIDetector | None = None,
         cost_limit: float = 0,
         daily_cost_limit: float = 0,
         total_cost_limit: float = 0,
@@ -88,7 +89,7 @@ class AgentGuard:
         self._agent_id = agent_id
 
         # Core components
-        self._pii_detector = RegexPIIDetector()
+        self._pii_detector: PIIDetector = pii_detector or RegexPIIDetector()
         self._cost_tracker = CostTracker()
         self._audit_logger = AuditLogger(audit_path)
         self._audit_path = Path(audit_path)
@@ -336,7 +337,7 @@ class AgentGuard:
             if isinstance(p, Policy):
                 resolved.append(p)
             elif p == "pii":
-                resolved.append(PIIPolicy())
+                resolved.append(PIIPolicy(detector=self._pii_detector))
             elif p == "cost_limit":
                 resolved.append(
                     CostPolicy(

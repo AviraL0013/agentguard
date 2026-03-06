@@ -24,6 +24,7 @@ class PIIMatch:
     start: int             # start position in original text
     end: int               # end position in original text
     redacted_label: str = ""  # e.g. "[REDACTED_EMAIL]"
+    confidence: float = 1.0   # 0.0–1.0, default 1.0 for regex (always certain)
 
     def __post_init__(self):
         if not self.redacted_label:
@@ -44,6 +45,10 @@ class PIIDetector(Protocol):
 
     def redact(self, text: str) -> str:
         """Redact all PII from text, replacing with labels."""
+        ...
+
+    def has_pii(self, text: str) -> bool:
+        """Quick check — does *text* contain any PII?"""
         ...
 
 

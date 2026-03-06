@@ -42,7 +42,12 @@ from agentguard.policies.rate_limit_policy import RateLimitPolicy
 from agentguard.policies.content_policy import ContentPolicy
 
 # Detectors
-from agentguard.detectors.pii import RegexPIIDetector, PIIMatch
+from agentguard.detectors.pii import PIIDetector, RegexPIIDetector, PIIMatch
+
+try:
+    from agentguard.detectors.presidio import PresidioPIIDetector
+except ImportError:  # presidio packages not installed
+    pass  # type: ignore[assignment]
 
 # Tracking
 from agentguard.tracking.cost import CostTracker
@@ -82,7 +87,9 @@ __all__ = [
     "RateLimitPolicy",
     "ContentPolicy",
     # Detectors
+    "PIIDetector",
     "RegexPIIDetector",
+    "PresidioPIIDetector",
     "PIIMatch",
     # Tracking
     "CostTracker",

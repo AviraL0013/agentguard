@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from agentguard.core.events import AgentEvent, LLMCallEvent, PolicyAction, ToolCallEvent
-from agentguard.detectors.pii import RegexPIIDetector
+from agentguard.detectors.pii import PIIDetector, RegexPIIDetector
 from agentguard.policies.base import Policy, PolicyResult
 
 
@@ -21,7 +21,7 @@ class PIIPolicy(Policy):
     def __init__(
         self,
         action: PolicyAction = PolicyAction.BLOCK,
-        detector: RegexPIIDetector | None = None,
+        detector: PIIDetector | None = None,
     ) -> None:
         self._action = action
         self._detector = detector or RegexPIIDetector()

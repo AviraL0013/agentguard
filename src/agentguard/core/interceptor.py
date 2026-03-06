@@ -18,7 +18,7 @@ from agentguard.core.events import (
     PolicyViolationEvent,
     ToolCallEvent,
 )
-from agentguard.detectors.pii import PIIMatch, RegexPIIDetector
+from agentguard.detectors.pii import PIIDetector, PIIMatch, RegexPIIDetector
 from agentguard.logging.audit import AuditLogger
 from agentguard.policies.base import CombinedPolicyResult, PolicyEngine
 from agentguard.tracking.cost import CostTracker
@@ -45,7 +45,7 @@ class Interceptor:
         policy_engine: PolicyEngine,
         audit_logger: AuditLogger,
         cost_tracker: CostTracker,
-        pii_detector: Optional[RegexPIIDetector] = None,
+        pii_detector: Optional[PIIDetector] = None,
         on_escalation: Optional[Callable[[EscalationEvent], Any]] = None,
     ) -> None:
         self._policy_engine = policy_engine
