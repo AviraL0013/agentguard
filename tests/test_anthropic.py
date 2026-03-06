@@ -165,6 +165,8 @@ class TestGuardedAnthropic:
         assert len(lines) > 0, "Audit log is empty"
         # Verify it's valid JSON
         record = json.loads(lines[0])
+        if "data" in record and "seq" in record:
+            record = json.loads(record["data"])
         assert record["event_type"] == "llm_call"
         assert record["model"] == "claude-3-5-sonnet-20241022"
 

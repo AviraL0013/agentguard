@@ -17,8 +17,10 @@ from typing import Any, Callable, Coroutine, Optional, TypeVar, Union
 
 from agentguard.core.events import LLMCallEvent, ToolCallEvent
 from agentguard.core.interceptor import Interceptor, PolicyViolationError
+from agentguard.detectors.content import CompositeContentDetector, ContentDetector
 from agentguard.detectors.pii import PIIDetector, RegexPIIDetector
 from agentguard.logging.audit import AuditLogger
+from agentguard.logging.backends.base import AuditBackend
 from agentguard.logging.reader import AuditReader
 from agentguard.policies.base import Policy, PolicyEngine
 from agentguard.policies.content_policy import ContentPolicy
@@ -76,8 +78,12 @@ class AgentGuard:
         *,
         policies: Optional[list[Union[str, Policy]]] = None,
         audit_path: str | Path = "agentguard_audit.jsonl",
+        audit_backends: list[AuditBackend] | None = None,
+        audit_encryption_key: str | None = None,
         agent_id: str = "default",
         pii_detector: PIIDetector | None = None,
+        content_detectors: list[ContentDetector] | None = None,
+        content_threshold: float = 0.5,
         cost_limit: float = 0,
         daily_cost_limit: float = 0,
         total_cost_limit: float = 0,
@@ -90,8 +96,14 @@ class AgentGuard:
 
         # Core components
         self._pii_detector: PIIDetector = pii_detector or RegexPIIDetector()
+        self._content_detectors = content_detectors
+        self._content_threshold = content_threshold
         self._cost_tracker = CostTracker()
-        self._audit_logger = AuditLogger(audit_path)
+        self._audit_logger = AuditLogger(
+            audit_path,
+            backends=audit_backends,
+            encryption_key=audit_encryption_key,
+        )
         self._audit_path = Path(audit_path)
 
         # Build policy list
@@ -352,7 +364,14 @@ class AgentGuard:
                     RateLimitPolicy(max_calls=rate_limit_val or 60)
                 )
             elif p == "content_filter":
-                resolved.append(ContentPolicy())
+                if self._content_detectors:
+                    detector = CompositeContentDetector(
+                        detectors=list(self._content_detectors),
+                        threshold=self._content_threshold,
+                    )
+                    resolved.append(ContentPolicy(detector=detector, threshold=self._content_threshold))
+                else:
+                    resolved.append(ContentPolicy(threshold=self._content_threshold))
             elif p == "tool_restriction":
                 resolved.append(
                     ToolPolicy(

@@ -199,7 +199,18 @@ class AuditReader:
                 line = line.strip()
                 if line:
                     try:
-                        self._events.append(json.loads(line))
+                        parsed = json.loads(line)
+                        if isinstance(parsed, dict) and "data" in parsed and "hash" in parsed and "seq" in parsed:
+                            # Unwrap new AuditEntry format
+                            try:
+                                event_data = json.loads(parsed["data"])
+                                if isinstance(event_data, dict):
+                                    self._events.append(event_data)
+                            except json.JSONDecodeError:
+                                pass # Skip malformed inner json
+                        else:
+                            # Backward compatible flat JSON
+                            self._events.append(parsed)
                     except json.JSONDecodeError:
                         continue  # skip malformed lines
         self._loaded = True

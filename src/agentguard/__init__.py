@@ -43,26 +43,27 @@ from agentguard.policies.content_policy import ContentPolicy
 
 # Detectors
 from agentguard.detectors.pii import PIIDetector, RegexPIIDetector, PIIMatch
-
-try:
-    from agentguard.detectors.presidio import PresidioPIIDetector
-except ImportError:  # presidio packages not installed
-    pass  # type: ignore[assignment]
+from agentguard.detectors.content import (
+    ContentDetector,
+    ContentMatch,
+    RegexContentDetector,
+    ToxicityDetector,
+    SemanticInjectionDetector,
+    BiasDetector,
+    HallucinationDetector,
+    CompositeContentDetector,
+)
 
 # Tracking
 from agentguard.tracking.cost import CostTracker
 
-# Integrations (optional — imported lazily to avoid hard deps)
-try:
-    from agentguard.integrations.anthropic import GuardedAnthropic, AsyncGuardedAnthropic
-except ImportError:  # anthropic package not installed
-    pass  # type: ignore[assignment]
-
 # Logging & Audit
 from agentguard.logging.audit import AuditLogger
 from agentguard.logging.reader import AuditReader, RunTrace
+from agentguard.logging.backends.base import AuditBackend, AuditEntry, RetentionPolicy
+from agentguard.logging.backends.local import LocalFileBackend
 
-__version__ = "0.1.0"
+__version__ = "0.1.3"
 
 __all__ = [
     # Core
@@ -86,18 +87,61 @@ __all__ = [
     "ToolPolicy",
     "RateLimitPolicy",
     "ContentPolicy",
-    # Detectors
+    # PII Detectors
     "PIIDetector",
     "RegexPIIDetector",
-    "PresidioPIIDetector",
     "PIIMatch",
+    # Content Detectors
+    "ContentDetector",
+    "ContentMatch",
+    "RegexContentDetector",
+    "ToxicityDetector",
+    "SemanticInjectionDetector",
+    "BiasDetector",
+    "HallucinationDetector",
+    "CompositeContentDetector",
     # Tracking
     "CostTracker",
-    # Logging
+    # Logging & Audit
     "AuditLogger",
     "AuditReader",
     "RunTrace",
-    # Integrations
-    "GuardedAnthropic",
-    "AsyncGuardedAnthropic",
+    "AuditBackend",
+    "AuditEntry",
+    "RetentionPolicy",
+    "LocalFileBackend",
 ]
+
+# ---------------------------------------------------------------------------
+# Optional Integrations & Detectors (Imported lazily)
+# ---------------------------------------------------------------------------
+
+try:
+    from agentguard.detectors.presidio import PresidioPIIDetector
+    __all__.append("PresidioPIIDetector")
+except ImportError:  # presidio packages not installed
+    pass  # type: ignore[assignment]
+
+try:
+    from agentguard.integrations.anthropic import GuardedAnthropic, AsyncGuardedAnthropic
+    __all__.extend(["GuardedAnthropic", "AsyncGuardedAnthropic"])
+except ImportError:  # anthropic package not installed
+    pass  # type: ignore[assignment]
+
+try:
+    from agentguard.logging.backends.s3 import S3Backend
+    __all__.append("S3Backend")
+except ImportError:
+    pass
+
+try:
+    from agentguard.logging.backends.postgres import PostgresBackend
+    __all__.append("PostgresBackend")
+except ImportError:
+    pass
+
+try:
+    from agentguard.logging.backends.siem import SIEMBackend
+    __all__.append("SIEMBackend")
+except ImportError:
+    pass

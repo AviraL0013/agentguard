@@ -32,6 +32,8 @@ class TestAuditLogger:
 
         # Verify it's valid JSON
         data = json.loads(lines[0])
+        if "data" in data and "seq" in data:
+            data = json.loads(data["data"])
         assert data["model"] == "gpt-4o"
         assert data["event_type"] == "llm_call"
 
