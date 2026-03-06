@@ -161,6 +161,43 @@ class AgentGuard:
 
         return AsyncGuardedOpenAI(client, self._interceptor, self._agent_id, self._current_run_id, self)
 
+    def wrap_anthropic(self, client: Any) -> Any:
+        """Wrap a sync Anthropic client (``anthropic.Anthropic``) with a guarded proxy.
+
+        Returns a ``GuardedAnthropic`` instance that behaves identically
+        to the original client but runs all calls through AgentGuard::
+
+            import anthropic
+            client = anthropic.Anthropic()
+            safe = guard.wrap_anthropic(client)
+            response = safe.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=1024,
+                messages=[{"role": "user", "content": "Hello!"}],
+            )
+        """
+        from agentguard.integrations.anthropic import GuardedAnthropic
+
+        return GuardedAnthropic(client, self._interceptor, self._agent_id, self._current_run_id, self)
+
+    def wrap_anthropic_async(self, client: Any) -> Any:
+        """Wrap an async Anthropic client (``anthropic.AsyncAnthropic``) with a guarded proxy.
+
+        Returns an ``AsyncGuardedAnthropic`` instance::
+
+            import anthropic
+            client = anthropic.AsyncAnthropic()
+            safe = guard.wrap_anthropic_async(client)
+            response = await safe.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=1024,
+                messages=[{"role": "user", "content": "Hello!"}],
+            )
+        """
+        from agentguard.integrations.anthropic import AsyncGuardedAnthropic
+
+        return AsyncGuardedAnthropic(client, self._interceptor, self._agent_id, self._current_run_id, self)
+
     def wrap_tool(self, func: F, *, tool_name: Optional[str] = None) -> F:
         """Wrap a sync tool function with policy enforcement.
 

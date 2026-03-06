@@ -95,10 +95,11 @@ class Interceptor:
             if hasattr(choice, "finish_reason"):
                 event.finish_reason = choice.finish_reason
 
-        # Extract usage
-        if hasattr(response, "usage") and response.usage:
-            event.tokens_in = getattr(response.usage, "prompt_tokens", 0)
-            event.tokens_out = getattr(response.usage, "completion_tokens", 0)
+        # Extract usage (only if not already populated by a specific integration)
+        if event.tokens_in == 0 and event.tokens_out == 0:
+            if hasattr(response, "usage") and response.usage:
+                event.tokens_in = getattr(response.usage, "prompt_tokens", 0)
+                event.tokens_out = getattr(response.usage, "completion_tokens", 0)
 
         # Track cost
         event.cost_usd = self._cost.track(

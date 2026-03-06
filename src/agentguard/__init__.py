@@ -8,9 +8,16 @@ Usage::
     from agentguard import AgentGuard, AuditReader
 
     guard = AgentGuard(policies=["pii", "content_filter", "cost_limit"])
-    safe_client = guard.wrap_openai(client)        # sync
-    safe_client = guard.wrap_openai_async(client)   # async
-    safe_tool = guard.wrap_tool(my_function)        # auto-detects sync/async
+
+    # OpenAI
+    safe_openai = guard.wrap_openai(client)           # sync
+    safe_openai = guard.wrap_openai_async(client)     # async
+
+    # Anthropic
+    safe_claude = guard.wrap_anthropic(client)        # sync
+    safe_claude = guard.wrap_anthropic_async(client)  # async
+
+    safe_tool = guard.wrap_tool(my_function)          # auto-detects sync/async
 """
 
 # Core
@@ -39,6 +46,12 @@ from agentguard.detectors.pii import RegexPIIDetector, PIIMatch
 
 # Tracking
 from agentguard.tracking.cost import CostTracker
+
+# Integrations (optional — imported lazily to avoid hard deps)
+try:
+    from agentguard.integrations.anthropic import GuardedAnthropic, AsyncGuardedAnthropic
+except ImportError:  # anthropic package not installed
+    pass  # type: ignore[assignment]
 
 # Logging & Audit
 from agentguard.logging.audit import AuditLogger
@@ -77,4 +90,7 @@ __all__ = [
     "AuditLogger",
     "AuditReader",
     "RunTrace",
+    # Integrations
+    "GuardedAnthropic",
+    "AsyncGuardedAnthropic",
 ]

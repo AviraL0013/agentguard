@@ -20,6 +20,8 @@ from typing import Optional
 
 _DEFAULT_PRICING: dict[str, tuple[float, float]] = {
     # model_name: (input_cost_per_1M, output_cost_per_1M)
+
+    # --- OpenAI ---
     "gpt-4o": (2.50, 10.00),
     "gpt-4o-mini": (0.15, 0.60),
     "gpt-4o-2024-11-20": (2.50, 10.00),
@@ -29,9 +31,22 @@ _DEFAULT_PRICING: dict[str, tuple[float, float]] = {
     "o1": (15.00, 60.00),
     "o1-mini": (3.00, 12.00),
     "o3-mini": (1.10, 4.40),
+
+    # --- Anthropic Claude (generic aliases + versioned IDs) ---
+    # Generic aliases (prefix-matched for older model strings)
     "claude-3-5-sonnet": (3.00, 15.00),
     "claude-3-5-haiku": (0.80, 4.00),
     "claude-3-opus": (15.00, 75.00),
+    "claude-3-sonnet": (3.00, 15.00),
+    "claude-3-haiku": (0.25, 1.25),
+    # Versioned IDs (exact match, takes priority over prefix match)
+    "claude-3-5-sonnet-20241022": (3.00, 15.00),
+    "claude-3-5-haiku-20241022": (0.80, 4.00),
+    "claude-3-opus-20240229": (15.00, 75.00),
+    "claude-3-sonnet-20240229": (3.00, 15.00),
+    "claude-3-haiku-20240307": (0.25, 1.25),
+
+    # --- Google Gemini ---
     "gemini-2.0-flash": (0.10, 0.40),
     "gemini-1.5-pro": (1.25, 5.00),
 }

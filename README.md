@@ -7,7 +7,7 @@
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python 3.10+"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"></a>
   <a href="https://pypi.org/project/agentaudit-sdk/"><img src="https://img.shields.io/pypi/v/agentaudit-sdk.svg" alt="PyPI"></a>
-  <a href="#"><img src="https://img.shields.io/badge/tests-104%20passing-brightgreen.svg" alt="Tests"></a>
+  <a href="https://github.com/AviraL0013/agentguard/actions/workflows/tests.yml"><img src="https://github.com/AviraL0013/agentguard/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
 </p>
 
 ---
@@ -50,8 +50,76 @@ Every call is now:
 ## Installation
 
 ```bash
+# Core (OpenAI support included)
 pip install agentaudit-sdk
+
+# With Anthropic support
+pip install "agentaudit-sdk[anthropics]"
 ```
+
+---
+
+## 🤖 Anthropic Claude Integration
+
+Wrap Claude exactly like OpenAI — **3 lines, full protection**.
+
+```python
+import anthropic
+from agentguard import AgentGuard
+
+client = anthropic.Anthropic()
+
+guard = AgentGuard(
+    policies=["pii", "content_filter", "cost_limit"],
+    audit_path="audit.jsonl",
+    cost_limit=5.00,
+)
+
+safe = guard.wrap_anthropic(client)
+
+# Use exactly like the original — now fully protected
+response = safe.messages.create(
+    model="claude-3-5-sonnet-20241022",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello, Claude!"}],
+)
+print(response.content[0].text)
+```
+
+Every call is now:
+- ✅ **PII-scanned** — both `messages` list AND the top-level `system` prompt
+- ✅ **Policy-checked** — prompt injections blocked, budget enforced
+- ✅ **Cost-tracked** — accurate per-model pricing for all Claude 3 variants
+- ✅ **Audit-logged** — immutable JSON-lines trail
+
+### Async Claude
+
+```python
+import anthropic
+from agentguard import AgentGuard
+
+async with AgentGuard(policies=["pii", "content_filter"]) as guard:
+    client = anthropic.AsyncAnthropic()
+    safe = guard.wrap_anthropic_async(client)
+
+    response = await safe.messages.create(
+        model="claude-3-5-haiku-20241022",
+        max_tokens=512,
+        system="You are a helpful assistant.",   # 🛡️ system prompt is PII-scanned too
+        messages=[{"role": "user", "content": "Summarise this report."}],
+    )
+    print(response.content[0].text)
+```
+
+### Supported Claude Models (with built-in pricing)
+
+| Model | Input / 1M tokens | Output / 1M tokens |
+|---|---|---|
+| `claude-3-5-sonnet-20241022` | $3.00 | $15.00 |
+| `claude-3-5-haiku-20241022` | $0.80 | $4.00 |
+| `claude-3-opus-20240229` | $15.00 | $75.00 |
+| `claude-3-sonnet-20240229` | $3.00 | $15.00 |
+| `claude-3-haiku-20240307` | $0.25 | $1.25 |
 
 ---
 
